@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, Eye, EyeOff } from "lucide-react";
 
-export default function LoginPage() {
-  const { login } = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+export default function SignupPage() {
+  const { signup } = useAuth();
+  const [, setLocation] = useLocation();
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "", confirm: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,15 +18,26 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (form.password !== form.confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     try {
-      await login(username, password);
+      await signup(form.name, form.username, form.email, form.password);
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || "Sign up failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950 p-4">
@@ -45,49 +56,78 @@ export default function LoginPage() {
 
         <Card className="shadow-2xl border-slate-700">
           <CardHeader>
-            <CardTitle className="text-xl">Sign In</CardTitle>
-            <CardDescription>Enter your credentials to access the admin panel</CardDescription>
+            <CardTitle className="text-xl">Create Account</CardTitle>
+            <CardDescription>Register as a new administrator</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                  autoComplete="username"
+                  id="name"
+                  value={form.name}
+                  onChange={set("name")}
+                  placeholder="John Smith"
+                  autoComplete="name"
                   required
                   autoFocus
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password">
-                    <span className="text-xs text-blue-500 hover:text-blue-400 cursor-pointer">Forgot password?</span>
-                  </Link>
-                </div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={form.username}
+                  onChange={set("username")}
+                  placeholder="johnsmith"
+                  autoComplete="username"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={set("email")}
+                  placeholder="john@school.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    autoComplete="current-password"
+                    value={form.password}
+                    onChange={set("password")}
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
                     required
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowPassword(v => !v)}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm">Confirm Password</Label>
+                <Input
+                  id="confirm"
+                  type={showPassword ? "text" : "password"}
+                  value={form.confirm}
+                  onChange={set("confirm")}
+                  placeholder="Repeat your password"
+                  autoComplete="new-password"
+                  required
+                />
               </div>
 
               {error && (
@@ -97,14 +137,14 @@ export default function LoginPage() {
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground mt-5">
-              Don't have an account?{" "}
-              <Link href="/signup">
-                <span className="text-blue-500 hover:text-blue-400 font-medium cursor-pointer">Create one</span>
+              Already have an account?{" "}
+              <Link href="/">
+                <span className="text-blue-500 hover:text-blue-400 font-medium cursor-pointer">Sign in</span>
               </Link>
             </p>
           </CardContent>

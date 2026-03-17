@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import Layout from "@/components/layout";
 import LoginPage from "@/pages/login";
+import SignupPage from "@/pages/signup";
+import ForgotPasswordPage from "@/pages/forgot-password";
+import ResetPasswordPage from "@/pages/reset-password";
 import Dashboard from "@/pages/dashboard";
 import SchoolsPage from "@/pages/schools";
 import SchoolDetailPage from "@/pages/school-detail";
@@ -26,7 +29,14 @@ function AppRoutes() {
   }
 
   if (!admin) {
-    return <LoginPage />;
+    return (
+      <Switch>
+        <Route path="/signup" component={SignupPage} />
+        <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/reset-password" component={ResetPasswordPage} />
+        <Route component={LoginPage} />
+      </Switch>
+    );
   }
 
   return (

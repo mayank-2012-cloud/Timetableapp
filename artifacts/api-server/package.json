@@ -20,7 +20,8 @@
     "cors": "^2",
     "drizzle-orm": "catalog:",
     "express": "^5",
-    "express-session": "^1.19.0"
+    "express-session": "^1.19.0",
+    "resend": "^6.9.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",

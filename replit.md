@@ -4,6 +4,9 @@
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
 
+## Notes
+- **Resend email**: API key stored as `RESEND_API_KEY` env var (shared). Not using Replit's Resend connector — key was provided directly by user. If rotating the key, update it in the Secrets tab.
+
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces
