@@ -5,28 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { GraduationCap, Eye, EyeOff, ShieldCheck, X } from "lucide-react";
 
 export default function LoginPage() {
   const { login } = useAuth();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [adminLoading, setAdminLoading] = useState(false);
 
-  const handleAdminLogin = async () => {
-    setError("");
-    setAdminLoading(true);
-    try {
-      await login("Kali", "Linux123");
-    } catch (err: any) {
-      setError(err.message || "Administrator login failed");
-    } finally {
-      setAdminLoading(false);
-    }
-  };
+  const [showAdminForm, setShowAdminForm] = useState(false);
+  const [adminId, setAdminId] = useState("");
+  const [adminPass, setAdminPass] = useState("");
+  const [showAdminPass, setShowAdminPass] = useState(false);
+  const [adminError, setAdminError] = useState("");
+  const [adminLoading, setAdminLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +34,26 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAdminSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAdminError("");
+    setAdminLoading(true);
+    try {
+      await login(adminId, adminPass);
+    } catch (err: any) {
+      setAdminError(err.message || "Administrator login failed");
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
+  const toggleAdminForm = () => {
+    setShowAdminForm(v => !v);
+    setAdminId("");
+    setAdminPass("");
+    setAdminError("");
   };
 
   return (
@@ -123,16 +138,84 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:border-amber-500"
-              onClick={handleAdminLogin}
-              disabled={adminLoading}
-            >
-              <ShieldCheck className="w-4 h-4 mr-2" />
-              {adminLoading ? "Signing in..." : "Administrator Login"}
-            </Button>
+            {!showAdminForm ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:border-amber-500"
+                onClick={toggleAdminForm}
+              >
+                <ShieldCheck className="w-4 h-4 mr-2" />
+                Administrator Login
+              </Button>
+            ) : (
+              <div className="border border-amber-500/40 rounded-lg p-4 bg-amber-50/30 dark:bg-amber-950/10 space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium text-sm">
+                    <ShieldCheck className="w-4 h-4" />
+                    Administrator Login
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleAdminForm}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <form onSubmit={handleAdminSubmit} className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="admin-id">Administrator ID</Label>
+                    <Input
+                      id="admin-id"
+                      type="text"
+                      value={adminId}
+                      onChange={e => setAdminId(e.target.value)}
+                      placeholder="Enter administrator ID"
+                      autoComplete="off"
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="admin-pass">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="admin-pass"
+                        type={showAdminPass ? "text" : "password"}
+                        value={adminPass}
+                        onChange={e => setAdminPass(e.target.value)}
+                        placeholder="Enter administrator password"
+                        autoComplete="off"
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowAdminPass(v => !v)}
+                      >
+                        {showAdminPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {adminError && (
+                    <div className="bg-destructive/10 text-destructive text-sm px-3 py-2 rounded-md border border-destructive/20">
+                      {adminError}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                    disabled={adminLoading}
+                  >
+                    {adminLoading ? "Verifying..." : "Access Administration"}
+                  </Button>
+                </form>
+              </div>
+            )}
+
             <p className="text-center text-sm text-muted-foreground mt-4">
               Don't have an account?{" "}
               <Link href="/signup">
