@@ -129,6 +129,10 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      <p className="text-center text-sm text-muted-foreground mt-10 pb-2">
+        This App Is Made By <span className="font-semibold text-foreground">Mayank Suryakant Ghule</span> And Powered By <span className="font-semibold text-blue-600 dark:text-blue-400">Nexus</span> Which Owned By Mayank
+      </p>
     </div>
   );
 }
