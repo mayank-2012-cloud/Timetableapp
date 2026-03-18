@@ -13,6 +13,7 @@ import SchoolsPage from "@/pages/schools";
 import SchoolDetailPage from "@/pages/school-detail";
 import TeachersPage from "@/pages/teachers";
 import TimetablePage from "@/pages/timetable";
+import ProfilePage from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ function AppRoutes() {
         <Route path="/schools/:schoolId" component={SchoolDetailPage} />
         <Route path="/teachers" component={TeachersPage} />
         <Route path="/timetable" component={TimetablePage} />
+        <Route path="/profile" component={ProfilePage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

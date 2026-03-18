@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  UserCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -79,12 +80,13 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
             <div className="min-w-0">
               <p className="text-sidebar-foreground text-sm font-medium truncate">{admin?.name}</p>
-              <p className="text-sidebar-foreground/50 text-xs truncate">@{admin?.username}</p>
+              <p className="text-sidebar-foreground/50 text-xs truncate">{admin?.email ?? `@${admin?.username}`}</p>
             </div>
           </div>
+          <NavLink href="/profile" label="Profile Settings" icon={UserCircle} onClick={() => setSidebarOpen(false)} />
           <Button
             variant="ghost"
-            className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+            className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent mt-1"
             onClick={logout}
           >
             <LogOut className="w-4 h-4 mr-2" />
