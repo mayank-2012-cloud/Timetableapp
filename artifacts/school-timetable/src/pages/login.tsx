@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -14,6 +14,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  const handleAdminLogin = async () => {
+    setError("");
+    setAdminLoading(true);
+    try {
+      await login("Kali", "Linux123");
+    } catch (err: any) {
+      setError(err.message || "Administrator login failed");
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +114,30 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <p className="text-center text-sm text-muted-foreground mt-5">
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">or</span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:border-amber-500"
+              onClick={handleAdminLogin}
+              disabled={adminLoading}
+            >
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              {adminLoading ? "Signing in..." : "Administrator Login"}
+            </Button>
+            <p className="text-center text-xs text-muted-foreground mt-1">
+              ID: <span className="font-mono font-medium">Kali</span> &nbsp;·&nbsp; Pass: <span className="font-mono font-medium">Linux123</span>
+            </p>
+
+            <p className="text-center text-sm text-muted-foreground mt-4">
               Don't have an account?{" "}
               <Link href="/signup">
                 <span className="text-blue-500 hover:text-blue-400 font-medium cursor-pointer">Create one</span>
