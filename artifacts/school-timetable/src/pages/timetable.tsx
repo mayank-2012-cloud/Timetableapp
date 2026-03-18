@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Download } from "lucide-react";
 
 interface SchoolItem { id: number; name: string; }
 interface ClassItem { id: number; grade: string; sections: string; }
@@ -47,6 +48,7 @@ export default function TimetablePage() {
       .then(r => r.json()).then(setEntries);
   }, [selectedSchool]);
 
+  const selectedSchoolItem = schools.find(s => s.id === Number(selectedSchool));
   const selectedClassItem = classes.find(c => c.id === Number(selectedClass));
   const availableSections = selectedClassItem ? selectedClassItem.sections.split(",").map(s => s.trim()) : [];
 
@@ -61,11 +63,68 @@ export default function TimetablePage() {
     return acc;
   }, {} as Record<string, TimetableEntry[]>);
 
+  const exportToExcel = () => {
+    const schoolName = selectedSchoolItem?.name ?? "School";
+    const className = selectedClassItem?.grade ?? "All Classes";
+    const sectionLabel = selectedSection === "all" ? "All Sections" : `Section ${selectedSection}`;
+
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Full flat list sorted by day + time
+    const flatData = DAYS.flatMap(day =>
+      (byDay[day] ?? []).map(e => ({
+        Day: e.dayOfWeek,
+        Subject: e.subject,
+        "Start Time": e.startTime,
+        "End Time": e.endTime,
+        Class: e.className ?? "",
+        Section: e.section,
+        Teacher: e.teacherName ?? "",
+        Room: e.room ?? "",
+      }))
+    );
+
+    const flatSheet = XLSX.utils.json_to_sheet(flatData);
+    flatSheet["!cols"] = [
+      { wch: 12 }, { wch: 20 }, { wch: 12 }, { wch: 12 },
+      { wch: 16 }, { wch: 10 }, { wch: 20 }, { wch: 10 },
+    ];
+    XLSX.utils.book_append_sheet(wb, flatSheet, "Timetable");
+
+    // Sheet 2: Grid view — rows = time slots, cols = days
+    const allTimes = [...new Set(filtered.map(e => e.startTime))].sort();
+    const gridRows: Record<string, string>[] = allTimes.map(time => {
+      const row: Record<string, string> = { "Time": time };
+      DAYS.forEach(day => {
+        const slot = byDay[day]?.find(e => e.startTime === time);
+        row[day] = slot ? `${slot.subject}\n${slot.teacherName ?? ""}${slot.room ? `\nRoom: ${slot.room}` : ""}` : "";
+      });
+      return row;
+    });
+
+    if (gridRows.length > 0) {
+      const gridSheet = XLSX.utils.json_to_sheet(gridRows);
+      gridSheet["!cols"] = [{ wch: 10 }, ...DAYS.map(() => ({ wch: 24 }))];
+      XLSX.utils.book_append_sheet(wb, gridSheet, "Weekly Grid");
+    }
+
+    const safeName = `${schoolName}_${className}_${sectionLabel}`.replace(/[^a-z0-9_\- ]/gi, "_");
+    XLSX.writeFile(wb, `${safeName}_Timetable.xlsx`);
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Timetable</h1>
-        <p className="text-muted-foreground mt-1">View weekly timetable by school, class, and section</p>
+      <div className="flex items-start justify-between mb-6 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Timetable</h1>
+          <p className="text-muted-foreground mt-1">View weekly timetable by school, class, and section</p>
+        </div>
+        {filtered.length > 0 && (
+          <Button onClick={exportToExcel} variant="outline" className="shrink-0 gap-2">
+            <Download className="w-4 h-4" />
+            Export to Excel
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
