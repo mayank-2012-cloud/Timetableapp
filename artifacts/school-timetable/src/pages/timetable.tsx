@@ -119,12 +119,16 @@ export default function TimetablePage() {
           <h1 className="text-2xl font-bold">Timetable</h1>
           <p className="text-muted-foreground mt-1">View weekly timetable by school, class, and section</p>
         </div>
-        {filtered.length > 0 && (
-          <Button onClick={exportToExcel} variant="outline" className="shrink-0 gap-2">
-            <Download className="w-4 h-4" />
-            Export to Excel
-          </Button>
-        )}
+        <Button
+          onClick={exportToExcel}
+          variant="outline"
+          className="shrink-0 gap-2"
+          disabled={filtered.length === 0}
+          title={filtered.length === 0 ? "No timetable data to export" : "Download as Excel file"}
+        >
+          <Download className="w-4 h-4" />
+          Export to Excel
+        </Button>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
