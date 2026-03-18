@@ -32,3 +32,6 @@ channel = "stable-25_05"
 
 [userenv.shared]
 RESEND_API_KEY = "re_gFPrDPHe_FEbyFFqvyLWvnJnUXTU6Yk1x"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-3997c993-1aa0-4282-b05f-af879494589e"

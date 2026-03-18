@@ -133,10 +133,6 @@ export default function LoginPage() {
               <ShieldCheck className="w-4 h-4 mr-2" />
               {adminLoading ? "Signing in..." : "Administrator Login"}
             </Button>
-            <p className="text-center text-xs text-muted-foreground mt-1">
-              ID: <span className="font-mono font-medium">Kali</span> &nbsp;·&nbsp; Pass: <span className="font-mono font-medium">Linux123</span>
-            </p>
-
             <p className="text-center text-sm text-muted-foreground mt-4">
               Don't have an account?{" "}
               <Link href="/signup">
