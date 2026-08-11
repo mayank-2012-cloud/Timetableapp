@@ -20,22 +20,9 @@ A robust and intuitive scheduling application designed to streamline the managem
 
 *(Please update this section based on the specific technologies you used in this repository.)*
 
-* **Frontend:** [e.g., React Native / Flutter / Android (Kotlin/Java)]
-* **Backend:** [e.g., Node.js / Python Django / Firebase]
-* **Database:** [e.g., SQLite / MongoDB / PostgreSQL]
-
----
-
 ## 🚀 Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
-
-### Prerequisites
-
-Ensure you have the following installed on your system:
-* Git
-* [Insert Required SDK/Runtime, e.g., Node.js or Android Studio]
-* [Insert Package Manager, e.g., npm or gradle]
 
 ### Installation
 
